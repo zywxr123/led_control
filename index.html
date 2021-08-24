@@ -1,15 +1,16 @@
 <html>
 <head>
 <script>
+
 var connected = false;
 var services_discovered = false;
 var selected_device;
 var connected_server;
 var notifications_enabled = false;
 // service UUIDs
-ACCELEROMETER_SERVICE = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+ACCELEROMETER_SERVICE = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
 LED_SERVICE = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
-DEVICE_INFORMATION_SERVICE = '0000180a-0000-1000-8000-00805f9b34fb';
+DEVICE_INFORMATION_SERVICE = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
 // presence of services and characteristics
 var has_accelerometer_service = false;
 var has_accelerometer_data = false;
@@ -18,9 +19,14 @@ var has_led_matrix_state = false;
 var has_device_information_service = false;
 var has_model_name_string = false;
 // characteristic UUIDs
-ACCELEROMETER_DATA = 'e95dca4b-251d-470a-a062-fa1922dfa9a8';
+ACCELEROMETER_DATA = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
 LED_MATRIX_STATE = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
-MODEL_NUMBER_STRING = '00002a24-0000-1000-8000-00805f9b34fb';
+MODEL_NUMBER_STRING = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+// read data define
+SW_INDEX = 0;	
+MODE_INDEX = 2;	
+BRIGHTNESS_INDEX = 3;
+VOL_INDEX = 5;
 // cached characteristics
 var accelerometer_data;
 var led_matrix_state;
@@ -38,7 +44,7 @@ function discoverDevices() {
 console.log("discoverDevices");
 var options = {
 filters: [{ namePrefix: 'SMEC_CTRLLER' }],
-optionalServices: [ACCELEROMETER_SERVICE, LED_SERVICE]
+optionalServices: [ACCELEROMETER_SERVICE, LED_SERVICE, DEVICE_INFORMATION_SERVICE]
 }
 navigator.bluetooth.requestDevice(options)
 .then(device => {
@@ -70,38 +76,6 @@ document.getElementById('status_discovered').innerHTML = status;
 function setNotificationsStatus(status) {
 notifications_enabled = status;
 document.getElementById('status_notifications').innerHTML = status;
-}
-function readModelNumber() {
-console.log("readModelNumber");
-// state validation
-if (!connected) {
-alert("Error: Discover and connect to a device before using this function");
-return;
-}
-if (!services_discovered) {
-alert("Error: Service discovery has not yet completed");
-return;
-}
-if (!has_device_information_service) {
-alert("Error: The connected device does not contain the device information service");
-return;
-}
-if (!has_model_name_string) {
-alert("Error: The connected device does not contain the model name string characteristic");
-return;
-}
-model_number_string.readValue()
-.then(value => {
-data = new Uint8Array(value.buffer);
-model_number_string = new TextDecoder("utf-8").decode(data);
-console.log(model_number_string);
-document.getElementById("model_number").innerHTML = model_number_string;
-})
-.catch(error => {
-console.log('Error: ' + error);
-alert('Error: ' + error);
-return;
-});
 }
 function mode_add() {
 console.log("randomLEDs");
@@ -304,7 +278,43 @@ var led_array = 'VOL--\n';
 var my_led_array = [0, 0, 0, 0, 0, 0, 0];
 my_led_array.length = led_array.length;
 for(var i = 0; i < my_led_array.length; i++){
-	my_led_array[i] = led_array[i].charCodeAt();
+	my_led_array[i] = led_array[i].charCodeAt();//转成对于的ascii
+}
+var led_matrix_data = new Uint8Array(my_led_array);
+led_matrix_state.writeValue(led_matrix_data.buffer)
+.then(_ => {
+console.log('LED matrix state changed');
+})
+.catch(error => {
+console.log('Error: ' + error);
+alert('Error: ' + error);
+return;
+});
+}
+function sw_change() {
+//console.log("randomLEDs");
+// state validation
+//if (!connected) {
+//alert("Error: Discover and connect to a device before using this function");
+//return;
+//}
+//if (!services_discovered) {
+//alert("Error: Service discovery has not yet completed");
+//return;
+//}
+//if (!has_led_service) {
+//alert("Error: The connected device does not contain the LED service");
+//return;
+//}
+//if (!has_led_matrix_state) {
+//alert("Error: The connected device does not contain the LED matrix state characteristic");
+//return;
+//}
+var led_array = 'SWITCH\n';
+var my_led_array = [0, 0, 0, 0, 0, 0, 0];
+my_led_array.length = led_array.length;
+for(var i = 0; i < my_led_array.length; i++){
+	my_led_array[i] = led_array[i].charCodeAt();//转成对于的ascii
 }
 var led_matrix_data = new Uint8Array(my_led_array);
 led_matrix_state.writeValue(led_matrix_data.buffer)
@@ -318,23 +328,23 @@ return;
 });
 }
 function toggleAccelerometerNotifications() {
-console.log("toggleAccelerometerNotifications");
-if (!connected) {
-alert("Error: Discover and connect to a device before using this function");
-return;
-}
-if (!services_discovered) {
-alert("Error: Service discovery has not yet completed");
-return;
-}
-if (!has_accelerometer_service) {
-alert("Error: The connected device does not contain the accelerometer service");
-return;
-}
-if (!has_accelerometer_data) {
-alert("Error: The connected device does not contain the accelerometer data characteristic");
-return;
-}
+//console.log("toggleAccelerometerNotifications");
+//if (!connected) {
+//alert("Error: Discover and connect to a device before using this function");
+//return;
+//}
+//if (!services_discovered) {
+//alert("Error: Service discovery has not yet completed");
+//return;
+//}
+//if (!has_accelerometer_service) {
+//alert("Error: The connected device does not contain the accelerometer service");
+//return;
+//}
+//if (!has_accelerometer_data) {
+//alert("Error: The connected device does not contain the accelerometer data characteristic");
+//return;
+//}
 if (!notifications_enabled) {
 accelerometer_data.startNotifications().then(_ => {
 console.log('accelerometer notifications started');
@@ -445,11 +455,37 @@ function onAccelerometerData(event) {
 console.log("onAccelerometerData");
 buffer = event.target.value.buffer;
 dataview = new DataView(buffer);
-X = dataview.getUint16(0, true);
-Y = dataview.getUint16(2, true);
-Z = dataview.getUint16(4, true);
-console.log("X=" + X + ", Y=" + Y + ", Z+" + Z);
-document.getElementById("accelerometer_data").innerHTML = "X=" + X + ", Y=" + Y + ", Z=" + Z;
+var data_string = [0];
+var count = 0;
+data_string.length = dataview.byteLength;
+var sw = '', mode = '', brightness = '', vol = '';
+for(var i = 0; i < data_string.length; i++)
+{
+	data_string[i] = String.fromCharCode(dataview.getUint8(i, true));
+	if(data_string[i] == ',')
+	{
+		count++;
+		continue;
+	}
+	
+	switch(count)
+	{
+		case SW_INDEX:
+			sw += data_string[i];
+		break;
+		case MODE_INDEX:
+			mode += data_string[i];
+		break;
+		case BRIGHTNESS_INDEX:
+			brightness += data_string[i];
+		break;
+		case VOL_INDEX:
+			vol += data_string[i];
+		break;
+	}
+}
+//console.log("X=" + X + ", Y=" + Y + ", Z+" + Z);
+document.getElementById("accelerometer_data").innerHTML = "SW=" + sw + ", MODE=" + mode + ", BRIGHTNESS=" + brightness + ", VOL=" + vol;
 }
 </script>
 </head>
@@ -477,10 +513,8 @@ document.getElementById("accelerometer_data").innerHTML = "X=" + X + ", Y=" + Y 
 <h2>Device Discovery and Connection</h2>
 <button id="btn_scan" onclick="discoverDevicesOrDisconnect()">Discover Devices</button>
 <hr>
-<h2>Reading and Writing</h2>
-<h3>Read Characteristic - Model Number</h3>
-<button id="btn_read" onclick="readModelNumber()">Read Model Number</button>
-<div id="model_number"></div>
+<h3>SW</h3>
+<button id="btn_sw" onclick="sw_change()">sw chanege</button>
 <h3>MODE</h3>
 <button id="btn_mode_add" onclick="mode_add()">mode add</button>
 <button id="btn_mode_minus" onclick="mode_minus()">mode minus</button>
@@ -491,7 +525,7 @@ document.getElementById("accelerometer_data").innerHTML = "X=" + X + ", Y=" + Y 
 <button id="btn_volume_add" onclick="volume_add()">volume add</button>
 <button id="btn_volume_minus" onclick="volume_minus()">volume minus</button>
 <hr>
-<h2>Notifications - Accelerometer X, Y, Z</h2>
+<h2>IntelligentLight State</h2>
 <button id="btn_notify" onclick="toggleAccelerometerNotifications()">Toggle Notifications</button>
 <div id="accelerometer_data"></div>
 </body>
