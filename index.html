@@ -10,7 +10,7 @@ var notifications_enabled = false;
 // service UUIDs
 ACCELEROMETER_SERVICE = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
 LED_SERVICE = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
-DEVICE_INFORMATION_SERVICE = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+DEVICE_INFORMATION_SERVICE = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
 // presence of services and characteristics
 var has_accelerometer_service = false;
 var has_accelerometer_data = false;
@@ -44,7 +44,7 @@ function discoverDevices() {
 console.log("discoverDevices");
 var options = {
 filters: [{ namePrefix: 'SMEC_CTRLLER' }],
-optionalServices: [ACCELEROMETER_SERVICE, LED_SERVICE, DEVICE_INFORMATION_SERVICE]
+optionalServices: [DEVICE_INFORMATION_SERVICE]
 }
 navigator.bluetooth.requestDevice(options)
 .then(device => {
