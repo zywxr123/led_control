@@ -1,7 +1,7 @@
 <!doctype html>
 <head>
+<script src="FileSaver.js"></script>
 <script>
-
 var connected = false;
 var services_discovered = false;
 var selected_device;
@@ -18,6 +18,8 @@ var has_led_service = false;
 var has_led_matrix_state = false;
 var has_device_information_service = false;
 var has_model_name_string = false;
+	
+var sw = [];
 // characteristic UUIDs
 ACCELEROMETER_DATA = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
 LED_MATRIX_STATE = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
@@ -43,7 +45,7 @@ resetUI();
 function discoverDevices() {
 console.log("discoverDevices");
 var options = {
-filters: [{ namePrefix: 'SMEC_CTRLLER' }],
+filters: [{ namePrefix: 'MJ_BV01' }],
 optionalServices: [DEVICE_INFORMATION_SERVICE]
 }
 navigator.bluetooth.requestDevice(options)
@@ -310,7 +312,7 @@ function sw_change() {
 //alert("Error: The connected device does not contain the LED matrix state characteristic");
 //return;
 //}
-var led_array = 'SWITCH\n';
+var led_array = 'ACQ=5\n';
 var my_led_array = [0, 0, 0, 0, 0, 0, 0];
 my_led_array.length = led_array.length;
 for(var i = 0; i < my_led_array.length; i++){
@@ -458,32 +460,46 @@ dataview = new DataView(buffer);
 var data_string = [0];
 var count = 0;
 data_string.length = dataview.byteLength;
-var sw = '', mode = '', brightness = '', vol = '';
+var my_length = sw.length;
+//arr.sw(my_length);
+//sw.splice(sw.length, 0, dataview);
+sw.length = sw.length + dataview.byteLength;
 for(var i = 0; i < data_string.length; i++)
 {
-	data_string[i] = String.fromCharCode(dataview.getUint8(i, true));
-	if(data_string[i] == ',')
-	{
-		count++;
-		continue;
-	}
-	
-	switch(count)
-	{
-		case SW_INDEX:
-			sw += data_string[i];
-		break;
-		case MODE_INDEX:
-			mode += data_string[i];
-		break;
-		case BRIGHTNESS_INDEX:
-			brightness += data_string[i];
-		break;
-		case VOL_INDEX:
-			vol += data_string[i];
-		break;
-	}
+	sw[my_length + i] = dataview.getUint8(i, true);
 }
+if(sw.length >= 6000)
+{
+	var blob = new Blob(sw, {type: "text/plain;charset=utf-8"});
+	saveAs(blob, "文件导出测试.txt");
+	//saveAs(sw, "文件导出测试.txt");	
+}
+var mode = '', brightness = '', vol = '';
+//for(var i = 0; i < data_string.length; i++)
+//{
+//	data_string[i] = String.fromCharCode(dataview.getUint8(i, true));
+//	if(data_string[i] == ',')
+//	{
+//		count++;
+//		continue;
+//	}
+//	
+//	switch(count)
+//	{
+//		case SW_INDEX:
+//			sw += data_string[i];
+//		break;
+//		case MODE_INDEX:
+//			mode += data_string[i];
+//		break;
+//		case BRIGHTNESS_INDEX:
+//			brightness += data_string[i];
+//		break;
+//		case VOL_INDEX:
+//			vol += data_string[i];
+//		break;
+//	}
+//}
 //console.log("X=" + X + ", Y=" + Y + ", Z+" + Z);
 document.getElementById("accelerometer_data").innerHTML = "SW=" + sw + ", MODE=" + mode + ", BRIGHTNESS=" + brightness + ", VOL=" + vol;
 }
