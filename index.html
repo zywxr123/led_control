@@ -112,6 +112,7 @@ var acq_array = 'ACQ=';
 collect_time = document.getElementById("set_time").value;
 var send_array = acq_array + collect_time + '\n';
 var my_led_array = [];
+sw.length = 0;
 my_led_array.length = send_array.length;
 for(var i = 0; i < my_led_array.length; i++){
 	my_led_array[i] = send_array[i].charCodeAt();//转成对于的ascii
@@ -265,12 +266,12 @@ for(var i = 0; i < (dataview.byteLength/2); i++)
 	sw[my_length + i] = dataview.getInt16(i*2, true);
 }
 var csv_data = [];
-	csv_data.length = sw.length*2;
-if(sw.length >= collect_time * 3 * 200)
+csv_data.length = sw.length*2;
+if(sw.length >= collect_time * 3 * 1600)
 {
 	for(var j = 0; j < sw.length; j++)
 	{
-		csv_data[count++] = sw[j];
+		csv_data[count++] = sw[j] * 0.244;	
 		csv_data[count++] = ',';
 		if((j+1)%3 == 0 && j != 0)
 		{
