@@ -46,7 +46,7 @@ resetUI();
 function discoverDevices() {
 console.log("discoverDevices");
 var options = {
-filters: [{ namePrefix: 'MJ_BV01' }],
+filters: [{ namePrefix: 'MJ' }],
 optionalServices: [DEVICE_INFORMATION_SERVICE]
 }
 navigator.bluetooth.requestDevice(options)
@@ -67,9 +67,9 @@ function setConnectedStatus(status) {
 connected = status;
 document.getElementById('status_connected').innerHTML = status;
 if (status == true) {
-document.getElementById('btn_scan').innerHTML = "Disconnect";
+document.getElementById('btn_scan').innerHTML = "断开连接";
 } else {
-document.getElementById('btn_scan').innerHTML = "Discover Devices";
+document.getElementById('btn_scan').innerHTML = "发现设备";
 }
 }
 function setDiscoveryStatus(status) {
@@ -288,18 +288,14 @@ if(sw.length >= collect_time * 3 * 1600)
 </script>
 </head>
 <body>
-<h1>加速度采集测试</h1>
+<h1>MJ BV02</h1>
 <h2>状态</h2>
-<table border="1">
+<table width="285" border="1">
 <tr>
-<td>
-<b>Connected</b>
-</td>
-<td>
-<b>Service Discovery Completed</b>
-</td>
-<td>
-<b>Notifications</b>
+<td width="65"> <strong>连 接</strong></td>
+<td width="107"><strong>服务发现完成</strong></td>
+<td width="91">
+<b>通 知</b>
 </td>
 </tr>
 <tr>
@@ -311,12 +307,12 @@ if(sw.length >= collect_time * 3 * 1600)
 <h2>设备发现与连接</h2>
 <button id="btn_scan" onclick="discoverDevicesOrDisconnect()">扫描设备</button>
 <hr>
-<h3>采集时间</h3>
+<h3>采集时间（单位：秒）</h3>
 <input type="input_read" name="set_time" id="set_time" value="">
-<button id="btn_sw" onclick="sw_change()">send ble</button>
+<button id="btn_sw" onclick="sw_change()">发送</button>
 <hr>
-<h2>接收使能</h2>
-<button id="btn_notify" onclick="toggleAccelerometerNotifications()">打开</button>
+<h2>通知</h2>
+<button id="btn_notify" onclick="toggleAccelerometerNotifications()">切换通知</button>
 <div id="accelerometer_data"></div>
 </body>
 <!doctype /html>
