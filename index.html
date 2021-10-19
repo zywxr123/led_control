@@ -101,7 +101,7 @@ function sw_change() {
 //}
 var time = new Date();
 var year = time.getFullYear();
-var mon = (time.getMonth()+1) < 10 ? '0'+(time.getDate()+1) : time.getDate()+1;
+var mon = (time.getMonth()+1) < 10 ? '0'+(time.getMonth()) : time.getMonth()+1;
 var day = time.getDate() < 10 ? '0'+time.getDate() : time.getDate();
 var hour = time.getHours() < 10 ? '0'+time.getHours() : time.getHours();
 var min = time.getMinutes() < 10 ? '0'+time.getMinutes() : time.getMinutes();
